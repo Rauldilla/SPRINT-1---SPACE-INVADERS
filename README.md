@@ -1,11 +1,8 @@
-# Breakout
+Equipo 11, no se el nombre de grupo
 
-This is a Breakout game clone developed for android phones. You can find complete project in Android Studio project directory. I have also included apk file in APK file directory.
+para poder levantar
+gradlew wrapper
 
-# How to run
-
-Install SpaceInvaders.apk from APK file directory. Touch the left or right side of screen to move the player ship in the corresponding direction. Press the red button to shoot bullets.
-
-# Additional Dependencies
-
-Just an Android phone.
+para ver el fallo de compilacion
+para debug
+gradle build --info --debug
