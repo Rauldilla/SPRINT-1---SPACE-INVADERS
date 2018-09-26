@@ -45,8 +45,11 @@ public class Invader extends VisibleGameObject {
     // invader lands
     private boolean lost;
 
+    private boolean isAdult;
 
-    public Invader(Context context, int row, int column, int screenX, int screenY){
+    public Invader(Context context, int row, int column, int screenX, int screenY, boolean isAdult) {
+
+        this.isAdult = isAdult;
 
         this.screenX = screenX;
         this.screenY = screenY;
@@ -62,7 +65,7 @@ public class Invader extends VisibleGameObject {
         setSize(length, height);
         setInitialPosition(x, y);
 
-        isVisible = true;
+        this.isVisible = true;
 
         bitmap1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.invader1);
         bitmap2 = BitmapFactory.decodeResource(context.getResources(), R.drawable.invader2);
@@ -83,16 +86,16 @@ public class Invader extends VisibleGameObject {
 
     // overrided methods to control game object
     @Override
-    public void update(long fps, long startFrameTime){
+    public void update(long fps, long startFrameTime) {
 
         // current position of object;
         PointF loc = getPosition();
 
         // set new location of ship
-        if(shipState == ShipState.Left){
+        if (shipState == ShipState.Left) {
             loc.x = loc.x - shipSpeed / fps;
         }
-        if(shipState == ShipState.Right){
+        if (shipState == ShipState.Right) {
             loc.x = loc.x + shipSpeed / fps;
         }
 
@@ -104,39 +107,41 @@ public class Invader extends VisibleGameObject {
         // get player ship object
         PlayerShip playerShip = (PlayerShip) SpaceInvadersView.getObjectManager().get("playerShip");
 
-        // does invader want to take a shot
-        if(takeAim(playerShip.getPosition().x, playerShip.getLength())){
+        if (this.isAdult) {
+            // does invader want to take a shot
+            if (takeAim(playerShip.getPosition().x, playerShip.getLength())) {
 
-            // get bullet
-            Bullet bullet = (Bullet) SpaceInvadersView.getObjectManager().get("invadersBullet"
-                    + nextBullet);
+                // get bullet
+                Bullet bullet = (Bullet) SpaceInvadersView.getObjectManager().get("invadersBullet"
+                        + nextBullet);
 
-            if(bullet.shoot(loc.x + getLength() / 2, loc.y, Bullet.Direction.Down)){
-                nextBullet++;
+                if (bullet.shoot(loc.x + getLength() / 2, loc.y, Bullet.Direction.Down)) {
+                    nextBullet++;
 
-                if(nextBullet == maxInvaderBullets){
-                    // this stops the firing of another bullet until one completes its journey
-                    // because if bullet is still active shoot returns false.
-                    nextBullet = 0;
+                    if (nextBullet == maxInvaderBullets) {
+                        // this stops the firing of another bullet until one completes its journey
+                        // because if bullet is still active shoot returns false.
+                        nextBullet = 0;
+                    }
                 }
             }
         }
 
         // check if invader bumps with screen
-        if(loc.x > screenX - getLength() || loc.x < 0){
+        if (loc.x > screenX - getLength() || loc.x < 0) {
             bumped = true;
         }
 
         // handle if invader bumps with screen
-        if(bumped){
+        if (bumped) {
             dropDownAndReverse();
 
             // have the invaders landed
-            if(loc.y > screenY - screenY / 12){
+            if (loc.y > screenY - screenY / 12) {
                 lost = true;
             }
 
-            if(lost){
+            if (lost) {
                 SpaceInvadersView.getScoreBoard().setGameResult(ScoreBoard.GameResult.Lose);
                 SpaceInvadersView.setGameState(SpaceInvadersView.GameState.Completed);
                 return;
@@ -149,22 +154,21 @@ public class Invader extends VisibleGameObject {
     }
 
     @Override
-    public void draw(Canvas canvas, Paint paint){
-        if(isVisible){
+    public void draw(Canvas canvas, Paint paint) {
+        if (isVisible) {
             PointF loc = getPosition();
 
             // alternatively draw bitmap to give a sense of flying
-            if(SpaceInvadersView.getUhOrOh()){
+            if (SpaceInvadersView.getUhOrOh()) {
                 canvas.drawBitmap(bitmap1, loc.x, loc.y, paint);
-            }
-            else{
+            } else {
                 canvas.drawBitmap(bitmap2, loc.x, loc.y, paint);
             }
         }
     }
 
     @Override
-    public void reset(){
+    public void reset() {
         super.reset();
         shipSpeed = initialShipSpeed;
         isVisible = true;
@@ -175,13 +179,12 @@ public class Invader extends VisibleGameObject {
     }
 
     // helper methods
-    public void dropDownAndReverse(){
+    public void dropDownAndReverse() {
 
         // reverse direction
-        if(shipState == ShipState.Left){
+        if (shipState == ShipState.Left) {
             shipState = ShipState.Right;
-        }
-        else{
+        } else {
             shipState = ShipState.Left;
         }
 
@@ -196,26 +199,26 @@ public class Invader extends VisibleGameObject {
         bumped = false;
     }
 
-    public boolean takeAim(float playerShipX, float playerShipLength){
+    public boolean takeAim(float playerShipX, float playerShipLength) {
         int randomNumber = -1;
 
         PointF loc = getPosition();
 
         // if playerShip is near invader
-        if((playerShipX + playerShipLength > loc.x && playerShipX + playerShipLength < loc.x +
-                getLength()) || (playerShipX > loc.x && playerShipX < loc.x + getLength())){
+        if ((playerShipX + playerShipLength > loc.x && playerShipX + playerShipLength < loc.x +
+                getLength()) || (playerShipX > loc.x && playerShipX < loc.x + getLength())) {
 
             // a 1/150 probability to shoot
             randomNumber = generator.nextInt(150);
 
-            if(randomNumber == 0){
+            if (randomNumber == 0) {
                 return true;
             }
         }
 
         // if not near player, shoot with 1/2000 probability
         randomNumber = generator.nextInt(2000);
-        if(randomNumber == 0){
+        if (randomNumber == 0) {
             return true;
         }
 
@@ -223,24 +226,24 @@ public class Invader extends VisibleGameObject {
     }
 
     //setters
-    public void setInvisible(){
+    public void setInvisible() {
         isVisible = false;
     }
 
     // getters
-    public boolean getVisibility(){
+    public boolean getVisibility() {
         return isVisible;
     }
 
-    public Bitmap getBitmap1(){
+    public Bitmap getBitmap1() {
         return bitmap1;
     }
 
-    public Bitmap getBitmap2(){
+    public Bitmap getBitmap2() {
         return bitmap2;
     }
 
-    public boolean isLost(){
+    public boolean isLost() {
         return lost;
     }
 }
