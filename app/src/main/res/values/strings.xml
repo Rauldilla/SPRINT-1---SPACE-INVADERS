@@ -3,4 +3,6 @@
     <string name="action_settings">Settings</string>
     <string name="i_m_adult">Soy menor que 16</string>
     <string name="i_m_baby">Soy un adulto 16+</string>
+    <string name="enter_age">Introduzca la edad</string>
+    <string name="confirm">Confirmo</string>
 </resources>
